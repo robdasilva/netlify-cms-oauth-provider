@@ -1,0 +1,38 @@
+{
+  "inputSchema": {
+    "properties": {
+      "pathParameters": {
+        "additionalProperties": false,
+        "properties": {
+          "provider": { "enum": ["bitbucket", "github"], "type": "string" }
+        },
+        "required": ["provider"],
+        "type": "object"
+      },
+      "queryStringParameters": {
+        "properties": {
+          "code": { "type": "string" }
+        },
+        "required": ["code"],
+        "type": "object"
+      }
+    },
+    "type": "object"
+  },
+  "outputSchema": {
+    "properties": {
+      "additionalProperties": false,
+      "body": { "type": "string" },
+      "headers": {
+        "properties": {
+          "Content-Type": { "enum": ["text/html"], "type": "string" }
+        },
+        "required": ["Content-Type"],
+        "type": "object"
+      },
+      "statusCode": { "type": "integer" }
+    },
+    "required": ["body", "headers", "statusCode"],
+    "type": "object"
+  }
+}
