@@ -2,6 +2,34 @@
 
 Serverless external OAuth client for Netlify CMS built with AWS CDK
 
+## Usage
+
+You can use this AWS CDK stack to deploy a custom external OAuth client for Netlify CMS. After deployment, you will see a generated API Gateway endpoint to use in your Netlify CMS configuration:
+
+```bash
+✅ netlify-cms-oauth-provider
+
+Outputs:
+netlify-cms-oauth-provider.NetlifyCMSOAuthProviderRestApiEndpoint8018F931 = https://xxxxxxxxxx.execute-api.eu-central-1.amazonaws.com/auth/
+
+Stack ARN:
+arn:aws:cloudformation:eu-central-1:************:stack/netlify-cms-oauth-provider/d7960ca0-4f5d-11eb-91d1-06a9bc79c48a
+```
+
+In your `config.yaml`:
+
+```yaml
+backend:
+  base_url: https://xxxxxxxxxx.execute-api.eu-central-1.amazonaws.com
+  auth_endpoint: auth
+```
+
+### Custom domain
+
+You can also use a custom domain to attach the provider endpoints to. The stack will automatically create a new customizable subdomain (defaults to `'auth'`) to the specified zone name.
+
+This is useful, if you want your OAuth provider to live under the same domain name as your Netlify CMS powered blog or site. For example, if your website is hosted at `https://example.com`, you could configure your OAuth provider to be located at `https://auth.example.com`.
+
 ## Deployment
 
 ### TL;DR
