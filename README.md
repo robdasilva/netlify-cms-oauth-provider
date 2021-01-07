@@ -30,6 +30,10 @@ You can also use a custom domain to attach the provider endpoints to. The stack 
 
 This is useful, if you want your OAuth provider to live under the same domain name as your Netlify CMS powered blog or site. For example, if your website is hosted at `https://example.com`, you could configure your OAuth provider to be located at `https://auth.example.com`.
 
+If you are unfamiliar with Route53 hosted zones and how to point an existing domain to an AWS hosted service, please refer to the AWS docs on [Making Amazon Route 53 the DNS service for an existing domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/MigratingDNS.html).
+
+In the setup process, a SSL certificate will be issued for the subdomain to be created. To verify domain ownership you will have to create a new CNAME record on your subdomain. To find out the necessary steps, please refer to the AWS docs on [Using DNS to Validate Domain Ownership](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-dns.html).
+
 ## Deployment
 
 ### TL;DR
