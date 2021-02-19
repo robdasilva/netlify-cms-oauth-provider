@@ -18,7 +18,7 @@ describe('getScript', () => {
         ;((w) => {
           w.addEventListener(\\"message\\", (e) => {
             w.opener.postMessage(
-              'authorization:jest:' + (\\"example.com,www.example.com\\".split(',').includes(e.origin) ? 'success:{\\"provider\\":\\"jest\\",\\"token\\":\\"unit-test\\"}' : 'error:Invalid origin'),
+              'authorization:jest:' + (\\"example.com,www.example.com\\".split(',').includes(e.origin) ? 'success:{\\"provider\\":\\"jest\\",\\"token\\":\\"unit-test\\"}' : 'error:InvalidOrigin'),
               e.origin
             )
           }, { once:true })

@@ -7,7 +7,7 @@ export function getScript(provider: string, token?: string): string {
   const conditionalMessage =
     !token || origins === '*'
       ? `'${message}'`
-      : `("${origins}".split(',').includes(e.origin) ? '${message}' : 'error:Invalid origin')`
+      : `("${origins}".split(',').includes(e.origin) ? '${message}' : 'error:InvalidOrigin')`
 
   return `<!DOCTYPE html><html><body><script>
   ;((w) => {
