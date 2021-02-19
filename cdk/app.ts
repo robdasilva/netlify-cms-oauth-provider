@@ -1,5 +1,6 @@
 import { Cors } from '@aws-cdk/aws-apigateway'
 import { App } from '@aws-cdk/core'
+import { name } from '../package.json'
 import NetlifyCMSOAuthProvider from './stack'
 
 const app = new App()
@@ -16,6 +17,7 @@ new NetlifyCMSOAuthProvider(app, 'NetlifyCMSOAuthProvider', {
   allowOrigins,
   env: { region },
   hostedZoneId,
+  stackName: name,
   subdomain,
   zoneName,
 })
