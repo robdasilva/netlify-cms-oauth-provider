@@ -1,6 +1,6 @@
 import {
-  APIGatewayProxyEvent,
-  APIGatewayProxyResult,
+  APIGatewayProxyEventV2,
+  APIGatewayProxyResultV2,
   Callback,
   Context,
 } from 'aws-lambda'
@@ -14,7 +14,7 @@ jest.mock('../utils/get-oauth-client')
 jest.mock('../utils/get-script')
 
 const context = { awsRequestId: 'jest' } as Context
-const proxyEvent = {} as APIGatewayProxyEvent
+const proxyEvent = {} as APIGatewayProxyEventV2
 
 describe('handler', () => {
   afterEach(() => {
@@ -43,11 +43,14 @@ describe('handler', () => {
       requestContext: {
         ...proxyEvent.requestContext,
         domainName,
-        path,
+        http: {
+          ...proxyEvent.requestContext?.http,
+          path,
+        },
       },
     }
 
-    const callback: Callback<APIGatewayProxyResult> = (e, result) => {
+    const callback: Callback<APIGatewayProxyResultV2> = (e, result) => {
       expect(e).toBeNull()
 
       expect(result).toStrictEqual(
@@ -97,11 +100,14 @@ describe('handler', () => {
       requestContext: {
         ...proxyEvent.requestContext,
         domainName,
-        path,
+        http: {
+          ...proxyEvent.requestContext?.http,
+          path,
+        },
       },
     }
 
-    const callback: Callback<APIGatewayProxyResult> = (e, result) => {
+    const callback: Callback<APIGatewayProxyResultV2> = (e, result) => {
       expect(e).toBeNull()
 
       expect(result).toStrictEqual(

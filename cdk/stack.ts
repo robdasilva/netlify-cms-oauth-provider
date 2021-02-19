@@ -1,8 +1,5 @@
-import {
-  LambdaIntegration,
-  MockIntegration,
-  RestApi,
-} from '@aws-cdk/aws-apigateway'
+import { DomainName, HttpApi, HttpMethod } from '@aws-cdk/aws-apigatewayv2'
+import { LambdaProxyIntegration } from '@aws-cdk/aws-apigatewayv2-integrations'
 import { DnsValidatedCertificate } from '@aws-cdk/aws-certificatemanager'
 import { Runtime } from '@aws-cdk/aws-lambda'
 import {
@@ -11,7 +8,7 @@ import {
   NodejsFunctionProps,
 } from '@aws-cdk/aws-lambda-nodejs'
 import { ARecord, HostedZone, RecordTarget } from '@aws-cdk/aws-route53'
-import { ApiGateway } from '@aws-cdk/aws-route53-targets'
+import { ApiGatewayv2Domain } from '@aws-cdk/aws-route53-targets'
 import { Secret } from '@aws-cdk/aws-secretsmanager'
 import { App, Duration, Stack, StackProps } from '@aws-cdk/core'
 
@@ -23,6 +20,8 @@ interface INetlifyCMSOAuthProviderProps extends StackProps {
 }
 
 export default class NetlifyCMSOAuthProvider extends Stack {
+  private domainName?: DomainName
+
   constructor(
     app: App,
     id: string,
@@ -34,61 +33,11 @@ export default class NetlifyCMSOAuthProvider extends Stack {
       ...props
     }: INetlifyCMSOAuthProviderProps
   ) {
-    super(app, 'NetlifyCMSOAuthProvider', props)
-
-    const restApiName = `${this.stackName}-rest-api`
-    const restApi = new RestApi(this, id + 'RestApi', {
-      defaultCorsPreflightOptions: {
-        allowMethods: ['GET'],
-        allowOrigins,
-      },
-      deployOptions: {
-        stageName: 'auth',
-      },
-      endpointExportName: `${restApiName}-url`,
-      restApiName,
-    })
+    super(app, id, props)
 
     const secret = new Secret(this, id + 'Secret', {
       secretName: `${this.stackName}-secret`,
     })
-
-    if (zoneName) {
-      const hostedZone = hostedZoneId
-        ? HostedZone.fromHostedZoneAttributes(
-            this,
-            id + 'PreExistingHostedZone',
-            {
-              hostedZoneId,
-              zoneName,
-            }
-          )
-        : new HostedZone(this, id + 'HostedZone', {
-            zoneName,
-          })
-
-      const domainName = `${subdomain}.${hostedZone.zoneName}`
-
-      const certificate = new DnsValidatedCertificate(
-        this,
-        id + 'Certificate',
-        {
-          domainName,
-          hostedZone,
-        }
-      )
-
-      restApi.addDomainName(id + 'RestApiDomainName', {
-        certificate,
-        domainName,
-      })
-
-      new ARecord(this, id + 'RestApiAliasRecord', {
-        recordName: domainName,
-        target: RecordTarget.fromAlias(new ApiGateway(restApi)),
-        zone: hostedZone,
-      })
-    }
 
     const defaultLambdaProps: NodejsFunctionProps = {
       bundling: {
@@ -117,23 +66,74 @@ export default class NetlifyCMSOAuthProvider extends Stack {
       functionName: this.stackName + '-http-get-auth-callback',
     })
 
-    const restApiRouteAuth = zoneName
-      ? restApi.root.addResource('auth')
-      : restApi.root
-    const restApiRouteAuthCallback = restApiRouteAuth.addResource('{provider}')
-    const restApiRouteAuthSuccess = restApiRouteAuth.addResource('success')
-
-    restApiRouteAuth.addMethod('GET', new LambdaIntegration(getAuth))
-    restApiRouteAuthCallback.addMethod(
-      'GET',
-      new LambdaIntegration(getAuthCallback)
-    )
-    restApiRouteAuthSuccess.addMethod(
-      'GET',
-      new MockIntegration({ integrationResponses: [{ statusCode: '204' }] })
-    )
-
     secret.grantRead(getAuth)
     secret.grantRead(getAuthCallback)
+
+    if (zoneName) {
+      const hostedZone = hostedZoneId
+        ? HostedZone.fromHostedZoneAttributes(
+            this,
+            id + 'PreExistingHostedZone',
+            {
+              hostedZoneId,
+              zoneName,
+            }
+          )
+        : new HostedZone(this, id + 'HostedZone', {
+            zoneName,
+          })
+
+      const domainName = `${subdomain}.${hostedZone.zoneName}`
+
+      const certificate = new DnsValidatedCertificate(
+        this,
+        id + 'Certificate',
+        {
+          domainName,
+          hostedZone,
+        }
+      )
+
+      this.domainName = new DomainName(this, id + 'ApiDomain', {
+        certificate,
+        domainName,
+      })
+
+      new ARecord(this, id + 'RestApiAliasRecord', {
+        recordName: domainName,
+        target: RecordTarget.fromAlias(new ApiGatewayv2Domain(this.domainName)),
+        zone: hostedZone,
+      })
+    }
+
+    const apiName = `${this.stackName}-api`
+    const api = new HttpApi(this, id + 'Api', {
+      apiName,
+      corsPreflight: {
+        allowMethods: [HttpMethod.GET],
+        allowOrigins,
+      },
+      ...(this.domainName && {
+        defaultDomainMapping: {
+          domainName: this.domainName,
+        },
+      }),
+    })
+
+    api.addRoutes({
+      integration: new LambdaProxyIntegration({
+        handler: getAuth,
+      }),
+      methods: [HttpMethod.GET],
+      path: '/auth',
+    })
+
+    api.addRoutes({
+      integration: new LambdaProxyIntegration({
+        handler: getAuthCallback,
+      }),
+      methods: [HttpMethod.GET],
+      path: '/auth/{provider}',
+    })
   }
 }

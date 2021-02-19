@@ -4,7 +4,7 @@ import httpErrorHandler from '@middy/http-error-handler'
 import httpEventNormalizer from '@middy/http-event-normalizer'
 import httpHeaderNormalizer from '@middy/http-header-normalizer'
 import validator from '@middy/validator'
-import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import type { APIGatewayProxyEventV2, APIGatewayProxyResult } from 'aws-lambda'
 import { warn } from 'lesslog'
 import log from 'middy-lesslog'
 import 'source-map-support/register'
@@ -13,7 +13,7 @@ import { getOAuthClient, Provider } from '../utils/get-oauth-client'
 import { getScript } from '../utils/get-script'
 import schema from './get-auth-callback.schema.json'
 
-interface IGetAuthCallbackEvent extends APIGatewayProxyEvent {
+interface IGetAuthCallbackEvent extends APIGatewayProxyEventV2 {
   pathParameters: {
     provider: Provider
   }
@@ -25,7 +25,10 @@ interface IGetAuthCallbackEvent extends APIGatewayProxyEvent {
 async function main({
   pathParameters: { provider },
   queryStringParameters: { code },
-  requestContext: { domainName, path },
+  requestContext: {
+    domainName,
+    http: { path },
+  },
 }: IGetAuthCallbackEvent): Promise<APIGatewayProxyResult> {
   const url = new URL(`${path}`, `https://${domainName}`)
 

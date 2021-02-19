@@ -1,6 +1,6 @@
 import {
-  APIGatewayProxyEvent,
-  APIGatewayProxyResult,
+  APIGatewayProxyEventV2,
+  APIGatewayProxyResultV2,
   Callback,
   Context,
 } from 'aws-lambda'
@@ -10,7 +10,7 @@ import { handler } from './get-auth'
 jest.mock('../utils/get-oauth-client')
 
 const context = { awsRequestId: 'jest' } as Context
-const proxyEvent = {} as APIGatewayProxyEvent
+const proxyEvent = {} as APIGatewayProxyEventV2
 
 describe('handler', () => {
   it('returns HTTP 302 redirect response to authorization URL', async (done) => {
@@ -25,11 +25,14 @@ describe('handler', () => {
       requestContext: {
         ...proxyEvent.requestContext,
         domainName: 'auth.example.com',
-        path: '/auth',
+        http: {
+          ...proxyEvent.requestContext?.http,
+          path: '/auth',
+        },
       },
     }
 
-    const callback: Callback<APIGatewayProxyResult> = (e, result) => {
+    const callback: Callback<APIGatewayProxyResultV2> = (e, result) => {
       expect(e).toBeNull()
 
       expect(result).toStrictEqual(
