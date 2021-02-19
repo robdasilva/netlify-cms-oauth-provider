@@ -10,7 +10,7 @@ import {
 import { ARecord, HostedZone, RecordTarget } from '@aws-cdk/aws-route53'
 import { ApiGatewayv2Domain } from '@aws-cdk/aws-route53-targets'
 import { Secret } from '@aws-cdk/aws-secretsmanager'
-import { App, Duration, Stack, StackProps } from '@aws-cdk/core'
+import { App, CfnOutput, Duration, Stack, StackProps } from '@aws-cdk/core'
 
 interface INetlifyCMSOAuthProviderProps extends StackProps {
   allowOrigins: string[]
@@ -134,6 +134,10 @@ export default class NetlifyCMSOAuthProvider extends Stack {
       }),
       methods: [HttpMethod.GET],
       path: '/auth/{provider}',
+    })
+
+    new CfnOutput(this, id + 'ApiEndpointUrl', {
+      value: api.apiEndpoint,
     })
   }
 }

@@ -10,7 +10,7 @@ You can use this AWS CDK stack to deploy a custom external OAuth client for Netl
 ✅ netlify-cms-oauth-provider
 
 Outputs:
-netlify-cms-oauth-provider.NetlifyCMSOAuthProviderRestApiEndpoint8018F931 = https://xxxxxxxxxx.execute-api.eu-central-1.amazonaws.com/auth/
+netlify-cms-oauth-provider.NetlifyCMSOAuthProviderApiEndpointUrl = https://xxxxxxxxxx.execute-api.eu-central-1.amazonaws.com
 
 Stack ARN:
 arn:aws:cloudformation:eu-central-1:************:stack/netlify-cms-oauth-provider/d7960ca0-4f5d-11eb-91d1-06a9bc79c48a
