@@ -2,9 +2,9 @@
   "name": "netlify-cms-oauth-provider",
   "version": "1.0.0",
   "description": "Serverless external OAuth client for Netlify CMS built with AWS CDK",
-  "author": "Robert Schweizer <mail@robertschweizer.me> (http://robertschweizer.me)",
+  "author": "Robert Da Silva <mail@robdasilva.com> (https://robdasilva.com)",
   "license": "MIT",
-  "homepage": "https://github.com/rschweizer/netlify-cms-oauth-provider#readme",
+  "homepage": "https://github.com/robdasilva/netlify-cms-oauth-provider#readme",
   "keywords": [
     "aws",
     "cdk",
@@ -23,10 +23,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rschweizer/netlify-cms-oauth-provider.git"
+    "url": "git+https://github.com/robdasilva/netlify-cms-oauth-provider.git"
   },
   "bugs": {
-    "url": "https://github.com/rschweizer/netlify-cms-oauth-provider/issues"
+    "url": "https://github.com/robdasilva/netlify-cms-oauth-provider/issues"
   },
   "devDependencies": {
     "@aws-cdk/aws-apigateway": "^1.90.0",

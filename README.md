@@ -39,7 +39,7 @@ In the setup process, a SSL certificate will be issued for the subdomain to be c
 ### TL;DR
 
 ```bash
-$ git clone git@github.com:rschweizer/netlify-cms-oauth-provider.git
+$ git clone git@github.com:robdasilva/netlify-cms-oauth-provider.git
 
 $ cd netlify-cms-oauth-provider
 
